@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Predicción</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function realizarPrediccion(event) {
+            event.preventDefault();
+            const global_radiation = document.getElementById('global_radiation').value;
+            const cloud_cover = document.getElementById('cloud_cover').value;
+            const mean_temp = document.getElementById('mean_temp').value;
+            const max_temp = document.getElementById('max_temp').value;
+            const pressure = document.getElementById('pressure').value;
+            const min_temp = document.getElementById('min_temp').value;
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `global_radiation=${global_radiation}&cloud_cover=${cloud_cover}&mean_temp=${mean_temp}&max_temp=${max_temp}&pressure=${pressure}&min_temp=${min_temp}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if (data.error) {
+                    document.getElementById('resultado').innerText = 'Error: ' + data.error;
+                } else {
+                    document.getElementById('resultado').innerText = 'Horas con sol: ' + data.Predicción;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultado').innerText = 'Error en la solicitud.';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+        <h1 class="text-3xl font-bold mb-8 text-center text-gray-800">Realizar Predicción</h1>
+        <form id="formulario" onsubmit="realizarPrediccion(event)" class="space-y-6">
+            <div>
+                <label for="loanAmount" class="block text-sm font-medium text-gray-700">radiación_global:</label>
+                <input type="text" id="global_radiation" name="global_radiation" class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="applicantIncome" class="block text-sm font-medium text-gray-700">cobertura_de_nube:</label>
+                <input type="text" id="cloud_cover" name="cloud_cover" class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="loanAmount" class="block text-sm font-medium text-gray-700">temperatura_media:</label>
+                <input type="text" id="mean_temp" name="mean_temp" class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="max_temp" class="block text-sm font-medium text-gray-700">temperatura_máxima:</label>
+                <input type="text" id="max_temp" name="max_temp" class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="pressure" class="block text-sm font-medium text-gray-700">presión:</label>
+                <input type="text" id="pressure" name="pressure" class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="min_temp" class="block text-sm font-medium text-gray-700">temperatura_mín:</label>
+                <input type="text" id="min_temp" name="min_temp" class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <input type="submit" value="Enviar" class="w-full bg-indigo-600 text-white font-medium py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            </div>
+        </form>
+        <p id="resultado" class="mt-4 text-lg font-semibold text-center"></p>
+    </div>
+</body>
+</html>
